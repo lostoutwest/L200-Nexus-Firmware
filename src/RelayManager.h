@@ -12,6 +12,8 @@ public:
     void ignition(bool state);
     void starter(bool state);
     void headlights(bool state);
+    void accessories(bool state);
+    void horn(bool state);
 };
 
 extern RelayManager Relays;

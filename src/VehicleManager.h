@@ -8,11 +8,13 @@ public:
     void begin();
     void update();
 
-    // Public API for external requests (BLE/WiFi)
-    void requestUnlock();
-    void requestLock();
-    void requestIgnition(bool state);
-    void requestHeadlights(bool state);
+    // High-level Control API
+    void lock();
+    void unlock();
+    void startEngine();
+    void stopEngine();
+    void headlights(bool state);
+    void accessories(bool state);
 };
 
 extern VehicleManager VehicleMgr;

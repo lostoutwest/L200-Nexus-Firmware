@@ -7,7 +7,6 @@ VehicleManager VehicleMgr;
 
 void VehicleManager::begin()
 {
-    // Initialize the low-level relay hardware
     Relays.begin();
 
     // Sync state to initial hardware state
@@ -19,45 +18,95 @@ void VehicleManager::begin()
 
 void VehicleManager::update()
 {
-    // Monitoring logic and safety checks can go here
+    // Future safety monitoring logic here
 }
 
-void VehicleManager::requestUnlock()
+void VehicleManager::lock()
 {
-    Log.info("Request: UNLOCK");
-
-    Relays.unlock();
-    Vehicle.locked = false;
-
-    Log.info("Vehicle Unlocked");
-}
-
-void VehicleManager::requestLock()
-{
-    Log.info("Request: LOCK");
+    if (Vehicle.locked) {
+        Log.warning("Lock request ignored - vehicle already locked");
+        return;
+    }
 
     Relays.lock();
     Vehicle.locked = true;
-
     Log.info("Vehicle Locked");
 }
 
-void VehicleManager::requestIgnition(bool state)
+void VehicleManager::unlock()
 {
-    Log.info(state ? "Request: IGNITION ON" : "Request: IGNITION OFF");
+    if (!Vehicle.locked) {
+        Log.warning("Unlock request ignored - vehicle already unlocked");
+        return;
+    }
 
-    Relays.ignition(state);
-    Vehicle.ignition = state;
-
-    Log.info(state ? "Ignition Active" : "Ignition Disabled");
+    Relays.unlock();
+    Vehicle.locked = false;
+    Log.info("Vehicle Unlocked");
 }
 
-void VehicleManager::requestHeadlights(bool state)
+void VehicleManager::startEngine()
 {
-    Log.info(state ? "Request: HEADLIGHTS ON" : "Request: HEADLIGHTS OFF");
+    if (Vehicle.engineRunning) {
+        Log.warning("Start request ignored - engine already running");
+        return;
+    }
+
+    Log.info("Request: START ENGINE");
+
+    // Logic: Ignition ON -> Starter pulse -> Ignition ON (maintained)
+    Relays.ignition(true);
+    Vehicle.ignition = true;
+
+    delay(200); // Stabilization
+
+    Relays.starter(true);
+    Log.info("Cranking...");
+
+    // In a real scenario, we'd wait for an RPM signal.
+    // For now, we simulate a 1-second crank.
+    delay(1000);
+
+    Relays.starter(false);
+    Vehicle.engineRunning = true;
+
+    Log.info("Engine Started");
+}
+
+void VehicleManager::stopEngine()
+{
+    if (!Vehicle.engineRunning) {
+        Log.warning("Stop request ignored - engine not running");
+        return;
+    }
+
+    Relays.ignition(false);
+    Vehicle.ignition = false;
+    Vehicle.engineRunning = false;
+
+    Log.info("Engine Stopped");
+}
+
+void VehicleManager::headlights(bool state)
+{
+    if (Vehicle.headlights == state) {
+        Log.warning("Headlight request ignored - state already " + String(state ? "ON" : "OFF"));
+        return;
+    }
 
     Relays.headlights(state);
     Vehicle.headlights = state;
+    Log.info(state ? "Headlights ON" : "Headlights OFF");
+}
 
-    Log.info(state ? "Headlights Active" : "Headlights Disabled");
+void VehicleManager::accessories(bool state)
+{
+    if (Vehicle.accessories == state) {
+        Log.warning("Accessories request ignored - state already " + String(state ? "ON" : "OFF"));
+        return;
+    }
+
+    Relays.accessories(state);
+    Vehicle.accessories = state;
+    Log.info(state ? "Accessories ON" : "Accessories OFF");
 }

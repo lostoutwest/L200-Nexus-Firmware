@@ -8,9 +8,10 @@ public:
     // Door Locks
     bool locked = true;
 
-    // Ignition System
+    // Power / Ignition
     bool ignition = false;
     bool engineRunning = false;
+    bool accessories = false;
 
     // Lighting
     bool headlights = false;
@@ -22,8 +23,8 @@ public:
     int rpm = 0;
 
     // Connectivity
-    bool bleConnected = false;
-    bool wifiConnected = false;
+    bool connectedBLE = false;
+    bool connectedWiFi = false;
 };
 
 extern VehicleState Vehicle;
