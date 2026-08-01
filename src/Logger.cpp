@@ -1,21 +1,50 @@
 #include "Logger.h"
 
-void Logger::info(const char* msg) {
-    print("INFO", msg);
+#include "../include/version.h"
+
+Logger Log;
+
+void Logger::begin()
+{
+    Serial.println();
 }
 
-void Logger::warn(const char* msg) {
-    print("WARN", msg);
+void Logger::banner()
+{
+    Serial.println("==========================================");
+    Serial.println("        L200 NEXUS ACP");
+    Serial.println("        Project Genesis");
+    Serial.println("==========================================");
+
+    Serial.print("Firmware : ");
+    Serial.println(FW_VERSION);
+
+    Serial.print("Hardware : ");
+    Serial.println(HW_REVISION);
+
+    Serial.println();
 }
 
-void Logger::error(const char* msg) {
-    print("ERROR", msg);
+void Logger::info(const String& text)
+{
+    Serial.print("[INFO ] ");
+    Serial.println(text);
 }
 
-void Logger::print(const char* level, const char* msg) {
-    // Simple Serial prefix logging
-    Serial.print("[" );
-    Serial.print(level);
-    Serial.print("] ");
-    Serial.println(msg);
+void Logger::warning(const String& text)
+{
+    Serial.print("[WARN ] ");
+    Serial.println(text);
+}
+
+void Logger::error(const String& text)
+{
+    Serial.print("[ERROR] ");
+    Serial.println(text);
+}
+
+void Logger::debug(const String& text)
+{
+    Serial.print("[DEBUG ] ");
+    Serial.println(text);
 }

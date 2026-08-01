@@ -1,17 +1,14 @@
-#ifndef SYSTEMMANAGER_H
-#define SYSTEMMANAGER_H
+#pragma once
 
-#include "Logger.h"
-#include "version.h"
-
-class SystemManager {
+class SystemManager
+{
 public:
-    SystemManager();
-    void begin();
-    void update();
-private:
-    Logger logger;
-    // Add any subsystem members here
-};
 
-#endif // SYSTEMMANAGER_H
+    void begin();
+
+    void update();
+
+private:
+
+    bool initialised = false;
+};

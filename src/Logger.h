@@ -1,15 +1,22 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include <Arduino.h>
 
-class Logger {
+class Logger
+{
 public:
-    void info(const char* msg);
-    void warn(const char* msg);
-    void error(const char* msg);
-private:
-    void print(const char* level, const char* msg);
+
+    void begin();
+
+    void banner();
+
+    void info(const String& text);
+
+    void warning(const String& text);
+
+    void error(const String& text);
+
+    void debug(const String& text);
 };
 
-#endif // LOGGER_H
+extern Logger Log;

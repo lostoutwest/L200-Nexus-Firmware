@@ -1,2 +1,13 @@
-// Configuration parameters for L200 Nexus Firmware
-// Add hardware-specific definitions here as needed
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define SERIAL_BAUD 115200
+
+// Relay Pins
+#define PIN_RELAY_LOCK_A 16
+#define PIN_RELAY_LOCK_B 17
+#define PIN_RELAY_IGNITION 18
+#define PIN_RELAY_STARTER 19
+#define PIN_RELAY_HEADLIGHTS 20
+
+#endif // CONFIG_H

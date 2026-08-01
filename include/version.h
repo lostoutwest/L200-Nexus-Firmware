@@ -1,8 +1,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-// Firmware version information
-#define FIRMWARE_VERSION "2.1.0"
-#define FIRMWARE_CODENAME "Project Genesis"
+#define FW_VERSION "2.1.0"
+#define HW_REVISION "Rev A"
 
 #endif // VERSION_H
