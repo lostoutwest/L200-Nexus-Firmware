@@ -1,28 +1,28 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 
-#include <Arduino.h>
+#define SERIAL_BAUD 115200
 
-namespace Pins
+// Relay Pins
+#define PIN_RELAY_LOCK_A 16
+#define PIN_RELAY_LOCK_B 17
+#define PIN_RELAY_IGNITION 18
+#define PIN_RELAY_STARTER 19
+#define PIN_RELAY_HEADLIGHTS 20
+#define PIN_RELAY_ACCESSORIES 21
+#define PIN_RELAY_HORN 22
+
+// RGB Hardware
+#define PIN_RGB_DATA 5
+#define NUM_LEDS 14
+#define RGB_BRIGHTNESS_DEFAULT 75 // ~30% of 255
+
+namespace Timing
 {
-    // Relay Outputs
-    constexpr uint8_t LockRelay       = 16;
-    constexpr uint8_t UnlockRelay     = 17;
-    constexpr uint8_t IgnitionRelay   = 18;
-    constexpr uint8_t StarterRelay    = 19;
-    constexpr uint8_t HeadlightRelay  = 21;
-    constexpr uint8_t AccessoryRelay = 22;
-    constexpr uint8_t HornRelay      = 23;
-
-    // RGB
-    constexpr uint8_t RGB             = 5;
-
-    // Inputs
-    constexpr uint8_t BatterySense    = 34;
-    constexpr uint8_t CoolantSense     = 35;
-    constexpr uint8_t OilSense        = 32;
-    constexpr uint8_t RPMSense        = 33;
-    constexpr uint8_t AmbientSense    = 39;
-    constexpr uint8_t MotionSense     = 36;
+    constexpr uint16_t LockPulseMs     = 300;
+    constexpr uint16_t StarterMaxMs    = 1200;
+    constexpr uint16_t RGBFrameMs      = 20;
+    constexpr uint16_t AutoLockMs      = 30000;
 }
 
-constexpr uint32_t SERIAL_BAUD = 115200;
+#endif // CONFIG_H

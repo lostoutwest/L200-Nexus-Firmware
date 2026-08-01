@@ -1,20 +1,34 @@
 #pragma once
 
-#include <Arduino.h>
-
 class VehicleManager
 {
 public:
+
     void begin();
+
     void update();
 
-    // High-level Control API
-    void lock();
-    void unlock();
-    void startEngine();
-    void stopEngine();
-    void headlights(bool state);
-    void accessories(bool state);
+    bool lock();
+
+    bool unlock();
+
+    bool ignitionOn();
+
+    bool ignitionOff();
+
+    bool startEngine();
+
+    bool stopStarter();
+
+    bool headlights(bool state);
+
+    bool accessories(bool state);
+
+    bool horn(bool state);
+
+private:
+
+    bool canStart() const;
 };
 
-extern VehicleManager VehicleMgr;
+extern VehicleManager VehicleController;

@@ -33,14 +33,24 @@ void RelayManager::allOff()
     write(Pins::HornRelay, LOW);
 }
 
-void RelayManager::lock()
+void RelayManager::lockPulse()
 {
     write(Pins::LockRelay, HIGH);
     write(Pins::UnlockRelay, HIGH);
+
+    delay(Timing::LockPulseMs);
+
+    write(Pins::LockRelay, LOW);
+    write(Pins::UnlockRelay, LOW);
 }
 
-void RelayManager::unlock()
+void RelayManager::unlockPulse()
 {
+    write(Pins::LockRelay, LOW);
+    write(Pins::UnlockRelay, LOW);
+
+    delay(Timing::LockPulseMs);
+
     write(Pins::LockRelay, LOW);
     write(Pins::UnlockRelay, LOW);
 }

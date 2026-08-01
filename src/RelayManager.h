@@ -10,9 +10,9 @@ public:
 
     void allOff();
 
-    void lock();
+    void lockPulse();
 
-    void unlock();
+    void unlockPulse();
 
     void ignitionOn();
 
