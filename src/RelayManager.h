@@ -5,20 +5,32 @@
 class RelayManager
 {
 public:
+
     void begin();
 
+    void allOff();
+
     void lock();
+
     void unlock();
 
     void ignitionOn();
+
     void ignitionOff();
 
-    void startEngine();
-    void stopStarter();
+    void starterOn();
+
+    void starterOff();
 
     void headlights(bool state);
+
     void accessories(bool state);
+
     void horn(bool state);
+
+private:
+
+    void write(uint8_t pin, bool state);
 };
 
 extern RelayManager Relays;

@@ -1,71 +1,81 @@
 #include "RelayManager.h"
-#include <Arduino.h>
+
 #include "../include/config.h"
 
 RelayManager Relays;
 
 void RelayManager::begin()
 {
-    pinMode(PIN_RELAY_LOCK_A, OUTPUT);
-    pinMode(PIN_RELAY_LOCK_B, OUTPUT);
-    pinMode(PIN_RELAY_IGNITION, OUTPUT);
-    pinMode(PIN_RELAY_STARTER, OUTPUT);
-    pinMode(PIN_RELAY_HEADLIGHTS, OUTPUT);
-    pinMode(PIN_RELAY_ACCESSORIES, OUTPUT);
-    pinMode(PIN_RELAY_HORN, OUTPUT);
+    pinMode(Pins::LockRelay, OUTPUT);
+    pinMode(Pins::UnlockRelay, OUTPUT);
+    pinMode(Pins::IgnitionRelay, OUTPUT);
+    pinMode(Pins::StarterRelay, OUTPUT);
+    pinMode(Pins::HeadlightRelay, OUTPUT);
+    pinMode(Pins::AccessoryRelay, OUTPUT);
+    pinMode(Pins::HornRelay, OUTPUT);
 
-    // Safe default: Locked, All Off
-    lock();
-    ignitionOff();
-    stopStarter();
-    headlights(false);
-    accessories(false);
-    horn(false);
+    allOff();
+}
+
+void RelayManager::write(uint8_t pin, bool state)
+{
+    digitalWrite(pin, state ? HIGH : LOW);
+}
+
+void RelayManager::allOff()
+{
+    write(Pins::LockRelay, LOW);
+    write(Pins::UnlockRelay, LOW);
+    write(Pins::IgnitionRelay, LOW);
+    write(Pins::StarterRelay, LOW);
+    write(Pins::HeadlightRelay, LOW);
+    write(Pins::AccessoryRelay, LOW);
+    write(Pins::HornRelay, LOW);
 }
 
 void RelayManager::lock()
 {
-    digitalWrite(PIN_RELAY_LOCK_A, HIGH);
-    digitalWrite(PIN_RELAY_LOCK_B, HIGH);
+    write(Pins::LockRelay, HIGH);
+    write(Pins::UnlockRelay, HIGH);
 }
 
 void RelayManager::unlock()
 {
-    digitalWrite(PIN_RELAY_LOCK_A, LOW);
-    digitalWrite(PIN_RELAY_LOCK_B, LOW);
+    write(Pins::LockRelay, LOW);
+    write(Pins::UnlockRelay, LOW);
 }
 
 void RelayManager::ignitionOn()
 {
-    digitalWrite(PIN_RELAY_IGNITION, HIGH);
+    write(Pins::IgnitionRelay, HIGH);
 }
 
 void RelayManager::ignitionOff()
 {
-    digitalWrite(PIN_RELAY_IGNITION, LOW);
+    write(Pins::IgnitionRelay, LOW);
 }
 
-void RelayManager::startEngine()
+void RelayManager::starterOn()
 {
-    digitalWrite(PIN_RELAY_STARTER, HIGH);
+    write(Pins::StarterRelay, HIGH);
 }
 
-void RelayManager::stopStarter()
+void RelayManager::starterOff()
 {
-    digitalWrite(PIN_RELAY_STARTER, LOW);
+    write(Pins::StarterRelay, LOW);
 }
 
 void RelayManager::headlights(bool state)
 {
-    digitalWrite(PIN_RELAY_HEADLIGHTS, state ? HIGH : LOW);
+    write(Pins::HeadlightRelay, state);
 }
 
 void RelayManager::accessories(bool state)
 {
-    digitalWrite(PIN_RELAY_ACCESSORIES, state ? HIGH : LOW);
+    write(Pins::AccessoryRelay, state);
 }
 
 void RelayManager::horn(bool state)
 {
-    digitalWrite(PIN_RELAY_HORN, state ? HIGH : LOW);
+    write(Pins::HornRelay, state);
 }
