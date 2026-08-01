@@ -54,20 +54,18 @@ void VehicleManager::startEngine()
 
     Log.info("Request: START ENGINE");
 
-    // Logic: Ignition ON -> Starter pulse -> Ignition ON (maintained)
-    Relays.ignition(true);
+    Relays.ignitionOn();
     Vehicle.ignition = true;
 
     delay(200); // Stabilization
 
-    Relays.starter(true);
+    Relays.startEngine();
     Log.info("Cranking...");
 
-    // In a real scenario, we'd wait for an RPM signal.
-    // For now, we simulate a 1-second crank.
+    // Simulate a 1-second crank as we await real RPM input logic
     delay(1000);
 
-    Relays.starter(false);
+    Relays.stopStarter();
     Vehicle.engineRunning = true;
 
     Log.info("Engine Started");
@@ -80,7 +78,7 @@ void VehicleManager::stopEngine()
         return;
     }
 
-    Relays.ignition(false);
+    Relays.ignitionOff();
     Vehicle.ignition = false;
     Vehicle.engineRunning = false;
 

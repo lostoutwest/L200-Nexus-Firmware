@@ -9,8 +9,13 @@ public:
 
     void lock();
     void unlock();
-    void ignition(bool state);
-    void starter(bool state);
+
+    void ignitionOn();
+    void ignitionOff();
+
+    void startEngine();
+    void stopStarter();
+
     void headlights(bool state);
     void accessories(bool state);
     void horn(bool state);

@@ -14,10 +14,10 @@ void RelayManager::begin()
     pinMode(PIN_RELAY_ACCESSORIES, OUTPUT);
     pinMode(PIN_RELAY_HORN, OUTPUT);
 
-    // Safe default: Locked, Power Off
+    // Safe default: Locked, All Off
     lock();
-    ignition(false);
-    starter(false);
+    ignitionOff();
+    stopStarter();
     headlights(false);
     accessories(false);
     horn(false);
@@ -35,14 +35,24 @@ void RelayManager::unlock()
     digitalWrite(PIN_RELAY_LOCK_B, LOW);
 }
 
-void RelayManager::ignition(bool state)
+void RelayManager::ignitionOn()
 {
-    digitalWrite(PIN_RELAY_IGNITION, state ? HIGH : LOW);
+    digitalWrite(PIN_RELAY_IGNITION, HIGH);
 }
 
-void RelayManager::starter(bool state)
+void RelayManager::ignitionOff()
 {
-    digitalWrite(PIN_RELAY_STARTER, state ? HIGH : LOW);
+    digitalWrite(PIN_RELAY_IGNITION, LOW);
+}
+
+void RelayManager::startEngine()
+{
+    digitalWrite(PIN_RELAY_STARTER, HIGH);
+}
+
+void RelayManager::stopStarter()
+{
+    digitalWrite(PIN_RELAY_STARTER, LOW);
 }
 
 void RelayManager::headlights(bool state)
