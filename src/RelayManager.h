@@ -2,9 +2,11 @@
 
 #include <Arduino.h>
 
-struct Pulse
+struct RelayPulse
 {
     bool active = false;
+    uint8_t pin = 0;
+    bool endState = LOW;
     uint32_t startTime = 0;
     uint16_t duration = 0;
 };
@@ -41,9 +43,9 @@ private:
 
     void write(uint8_t pin, bool state);
 
-    Pulse lockPulse;
+    void pulse(uint8_t pin, bool startState, bool endState, uint16_t duration);
 
-    Pulse unlockPulse;
+    RelayPulse pulses[8];
 };
 
 extern RelayManager Relays;

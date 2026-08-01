@@ -21,20 +21,16 @@ void RelayManager::update()
 {
     uint32_t now = millis();
 
-    // Handle Lock Pulse
-    if (lockPulse.active && (now - lockPulse.startTime >= lockPulse.duration))
+    for (auto &p : pulses)
     {
-        write(Pins::LockRelay, LOW);
-        write(Pins::UnlockRelay, LOW);
-        lockPulse.active = false;
-    }
+        if (!p.active)
+            continue;
 
-    // Handle Unlock Pulse
-    if (unlockPulse.active && (now - unlockPulse.startTime >= unlockPulse.duration))
-    {
-        write(Pins::LockRelay, LOW);
-        write(Pins::UnlockRelay, LOW);
-        unlockPulse.active = false;
+        if (now - p.startTime >= p.duration)
+        {
+            digitalWrite(p.pin, p.endState);
+            p.active = false;
+        }
     }
 }
 
@@ -53,57 +49,45 @@ void RelayManager::allOff()
     write(Pins::AccessoryRelay, LOW);
     write(Pins::HornRelay, LOW);
 
-    lockPulse.active = false;
-    unlockPulse.active = false;
+    for (auto &p : pulses)
+    {
+        p.active = false;
+    }
+}
+
+void RelayManager::pulse(uint8_t pin, bool startState, bool endState, uint16_t duration)
+{
+    // Find first available pulse slot
+    for (auto &p : pulses)
+    {
+        if (!p.active)
+        {
+            digitalWrite(pin, startState);
+            p.pin = pin;
+            p.active = true;
+            p.startTime = millis();
+            p.duration = duration;
+            p.endState = endState;
+            return;
+        }
+    }
+    // If we reach here, all 8 slots are full (extremely unlikely)
 }
 
 void RelayManager::lockPulse()
 {
-    write(Pins::LockRelay, HIGH);
-    write(Pins::UnlockRelay, HIGH);
-
-    lockPulse.active = true;
-    lockPulse.startTime = millis();
-    lockPulse.duration = Timing::LockPulseMs;
+    // Lock logic: Both HIGH then both LOW
+    pulse(Pins::LockRelay, HIGH, LOW, Timing::LockPulseMs);
+    pulse(Pins::UnlockRelay, HIGH, LOW, Timing::LockPulseMs);
 }
 
 void RelayManager::unlockPulse()
 {
-    write(Pins::LockRelay, LOW); // Ensure they are low first for logic safety
-    write(Pins::UnlockRelay, LOW);
-
-    // Actuate
-    write(Pins::LockRelay, LOW); // In this specific hardware logic, LOW/LOW is unlock pulse
-    write(Pins::UnlockRelay, LOW);
-    // Wait, if the hardware is HIGH/HIGH lock, then LOW/LOW is unlock.
-    // The user's provided code laied out:
-    // LOCK: Lock HIGH, Unlock HIGH
-    // UNLOCK: Lock LOW, Unlock LOW
-    // Since the default state is already LOW/LOW (allOff), a pulse for UNLOCK
-    // needs to be a transition. Assuming the actuators are polar reversed.
-
-    // Correcting based on the user's architecture:
-    // LockPulse: High/High then Low/Low
-    // UnlockPulse: Low/Low (but it starts Low/Low, so a pulse might actually be Low/Low
-    // if the resting state was High/High, but we call allOff() at boot).
-
-    // Let's stick to the user's provided pulse logic but make it non-blocking.
-    // In their previous snippet:
-    // unlockPulse() { write(Lock, LOW); write(Unlock, LOW); delay(T); write(Lock, LOW); write(Unlock, LOW); }
-    // That logic was actually a no-op if they were already LOW.
-    // However, looking at the actuators: typically one is a mirror of the other.
-
-    // I will implement the logic precisely as the user requested in the a4.4 snippet,
-    // but non-blocking.
-
-    unlockPulse.active = true;
-    unlockPulse.startTime = millis();
-    unlockPulse.duration = Timing::LockPulseMs;
-
-    // For UNLOCK pulse, we drive them LOW (which they already are after allOff).
-    // In a real system, the "Rest" state might be floating.
-    write(Pins::LockRelay, LOW);
-    write(Pins::UnlockRelay, LOW);
+    // Unlock logic: Both LOW then both LOW (per user spec)
+    // Note: In a typical system this would be a polarity flip,
+    // but we follow the provided spec exactly.
+    pulse(Pins::LockRelay, LOW, LOW, Timing::LockPulseMs);
+    pulse(Pins::UnlockRelay, LOW, LOW, Timing::LockPulseMs);
 }
 
 void RelayManager::ignitionOn()
