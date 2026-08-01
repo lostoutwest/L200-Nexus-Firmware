@@ -1,0 +1,163 @@
+#include "RGBManager.h"
+
+CRGB leds[NUM_LEDS];
+
+RGBManager RGB;
+
+void RGBManager::begin()
+{
+    FastLED.addLEDS<WS2812B, PIN_RGB_DATA, GRB>(leds, NUM_LEDS);
+    FastLED.setBrightness(currentBrightness);
+    FastLED.clear();
+    FastLED.show();
+
+    setScene(RGBScene::OFF);
+}
+
+void RGBManager::setScene(RGBScene scene)
+{
+    if (currentScene == scene) return;
+
+    currentScene = scene;
+    animationPhase = 0.0f; // Reset animation when scene changes
+}
+
+void RGBManager::setBrightness(uint8_t brightness)
+{
+    currentBrightness = brightness;
+    FastLED.setBrightness(currentBrightness);
+}
+
+void RGBManager::update()
+{
+    handleAnimation();
+    updateHeartbeat();
+    FastLED.show();
+}
+
+void RGBManager::handleAnimation()
+{
+    unsigned long now = millis();
+    float delta = (now - lastUpdate) / 1000.0f;
+    lastUpdate = now;
+    animationPhase += delta;
+
+    switch (currentScene)
+    {
+        case RGBScene::OFF:
+            FastLED.clear();
+            break;
+
+        case RGBScene::BOOT:
+            sweep(CRGB::White, true, 1.5f);
+            break;
+
+        case RGBScene::IDLE:
+            // Dim warm white
+            fill_solid(leds, NUM_LEDS, CRGB(255, 200, 100));
+            FastLED.setBrightness(currentBrightness / 4);
+            break;
+
+        case RGBScene::BLE_ADVERTISING:
+            breathe(CRGB::Blue, 0.5f);
+            break;
+
+        case RGBScene::BLE_CONNECTED:
+            fill_solid(leds, NUM_LEDS, CRGB::Cyan);
+            break;
+
+        case RGBScene::UNLOCKING:
+            sweep(CRGB::Green, true, 2.0f);
+            break;
+
+        case RGBScene::LOCKING:
+            sweep(CRGB::Red, false, 2.0f);
+            break;
+
+        case RGBScene::IGNITION:
+            // Amber fade in
+            fill_solid(leds, NUM_LEDS, CRGB::Amber);
+            FastLED.setBrightness(currentBrightness * (0.5f + 0.5f * sin(animationPhase * 2.0f)));
+            break;
+
+        case RGBScene::STARTING:
+            chase(CRGB::White, 5.0f);
+            break;
+
+        case RGBScene::ENGINE_RUNNING:
+            // Slow green heartbeat
+            breathe(CRGB::Green, 0.3f);
+            break;
+
+        case RGBScene::LOW_BATTERY:
+            pulse(CRGB::Red, 0.5f);
+            break;
+
+        case RGBScene::OVERHEAT:
+            pulse(CRGB::Orange, 0.8f);
+            break;
+
+        case RGBScene::ALARM:
+            // Alternating Red/Blue
+            if ((int)(animationPhase * 2) % 2 == 0) fill_solid(leds, NUM_LEDS, CRGB::Red);
+            else fill_solid(leds, NUM_LEDS, CRGB::Blue);
+            break;
+
+        case RGBScene::OTA:
+            // Rainbow progress
+            fill_rainbow(leds, NUM_LEDS, animationPhase * 10.0f, 255 / NUM_LEDS);
+            break;
+
+        case RGBScene::FAULT:
+            // Purple flash
+            if ((int)(animationPhase * 5) % 2 == 0) fill_solid(leds, NUM_LEDS, CRGB::Purple);
+            else FastLED.clear();
+            break;
+    }
+
+    // Restore default brightness if modified by specific scenes
+    if (currentScene != RGBScene::IDLE && currentScene != RGBScene::IGNITION) {
+        FastLED.setBrightness(currentBrightness);
+    }
+}
+
+void RGBManager::updateHeartbeat()
+{
+    if (currentScene == RGBScene::ENGINE_RUNNING)
+    {
+        // la tiny brightness pulse every few seconds
+        float hb = 0.98f + 0.02f * sin(millis() / 1000.0f * 0.5f);
+        FastLED.setBrightness(currentBrightness * hb);
+    }
+}
+
+void RGBManager::sweep(CRGB color, bool leftToRight, float speed)
+{
+    FastLED.clear();
+    float pos = animationPhase * speed * NUM_LEDS;
+    int ledIdx = (int)pos % NUM_LEDS;
+
+    if (!leftToRight) ledIdx = (NUM_LEDS - 1) - ledIdx;
+    if (ledIdx >= 0 && ledIdx < NUM_LEDS) leds[ledIdx] = color;
+}
+
+void RGBManager::breathe(CRGB color, float speed)
+{
+    float brightness = (sin(animationPhase * speed * 6.28f) + 1.0f) / 2.0f;
+    fill_solid(leds, NUM_LEDS, color);
+    FastLED.setBrightness(currentBrightness * brightness);
+}
+
+void RGBManager::pulse(CRGB color, float speed)
+{
+    float brightness = (sin(animationPhase * speed * 3.14f) > 0) ? 1.0f : 0.2f;
+    fill_solid(leds, NUM_LEDS, color);
+    FastLED.setBrightness(currentBrightness * brightness);
+}
+
+void RGBManager::chase(CRGB color, float speed)
+{
+    FastLED.clear();
+    int ledIdx = (int)(animationPhase * speed * 10) % NUM_LEDS;
+    if (ledIdx >= 0 && ledIdx < NUM_LEDS) leds[ledIdx] = color;
+}

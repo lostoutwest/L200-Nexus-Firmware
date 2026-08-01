@@ -10,4 +10,9 @@
 #define PIN_RELAY_STARTER 19
 #define PIN_RELAY_HEADLIGHTS 20
 
+// RGB Hardware
+#define PIN_RGB_DATA 5
+#define NUM_LEDS 14
+#define RGB_BRIGHTNESS_DEFAULT 75 // ~30% of 255
+
 #endif // CONFIG_H

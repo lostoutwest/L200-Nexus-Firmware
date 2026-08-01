@@ -3,6 +3,7 @@
 #include "SystemManager.h"
 #include "Logger.h"
 #include "VehicleManager.h"
+#include "RGBManager.h"
 
 #include "../include/config.h"
 #include "../include/version.h"
@@ -21,9 +22,13 @@ void SystemManager::begin()
 
     Log.info("Initialising...");
 
+    RGB.begin();
+    RGB.setScene(RGBScene::BOOT);
+
     VehicleMgr.begin();
 
     Log.info("System Ready");
+    RGB.setScene(RGBScene::IDLE);
 }
 
 void SystemManager::update()
@@ -32,4 +37,5 @@ void SystemManager::update()
         return;
 
     VehicleMgr.update();
+    RGB.update();
 }
