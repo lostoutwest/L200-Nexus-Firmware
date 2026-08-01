@@ -55,6 +55,7 @@ void SystemManager::update()
 
     VehicleMgr.update();
     RGB.update();
+    Relays.update();
     BLE.update();
     WiFi.update();
     Sensors.update();
