@@ -17,6 +17,11 @@
 #define NUM_LEDS 14
 #define RGB_BRIGHTNESS_DEFAULT 75 // ~30% of 255
 
+// BLE UUIDs
+#define SERVICE_UUID      "12345678-1234-1234-1234-123456789001"
+#define COMMAND_UUID      "12345678-1234-1234-1234-123456789002"
+#define STATUS_UUID       "12345678-1234-1234-1234-123456789003"
+
 namespace Timing
 {
     constexpr uint16_t LockPulseMs     = 300;
