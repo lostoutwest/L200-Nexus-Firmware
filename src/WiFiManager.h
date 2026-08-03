@@ -8,4 +8,4 @@ public:
     void update();
 };
 
-extern WiFiManager WiFi;
+extern WiFiManager WiFiInterface;

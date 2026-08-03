@@ -21,6 +21,10 @@ public:
 
     void allOff();
 
+    void lock();
+
+    void unlock();
+
     void lockPulse();
 
     void unlockPulse();

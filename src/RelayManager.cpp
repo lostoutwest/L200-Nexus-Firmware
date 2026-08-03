@@ -36,7 +36,7 @@ void RelayManager::update()
 
 void RelayManager::write(uint8_t pin, bool state)
 {
-    digitalWrite(pin, state ? HIGH : LOW);
+    digitalWrite(pin, state ? LOW : HIGH);
 }
 
 void RelayManager::allOff()
@@ -74,20 +74,26 @@ void RelayManager::pulse(uint8_t pin, bool startState, bool endState, uint16_t d
     // If we reach here, all 8 slots are full (extremely unlikely)
 }
 
-void RelayManager::lockPulse()
+void RelayManager::lock()
 {
-    // Lock logic: Both HIGH then both LOW
     pulse(Pins::LockRelay, HIGH, LOW, Timing::LockPulseMs);
     pulse(Pins::UnlockRelay, HIGH, LOW, Timing::LockPulseMs);
 }
 
-void RelayManager::unlockPulse()
+void RelayManager::unlock()
 {
-    // Unlock logic: Both LOW then both LOW (per user spec)
-    // Note: In a typical system this would be a polarity flip,
-    // but we follow the provided spec exactly.
     pulse(Pins::LockRelay, LOW, LOW, Timing::LockPulseMs);
     pulse(Pins::UnlockRelay, LOW, LOW, Timing::LockPulseMs);
+}
+
+void RelayManager::lockPulse()
+{
+    lock();
+}
+
+void RelayManager::unlockPulse()
+{
+    unlock();
 }
 
 void RelayManager::ignitionOn()

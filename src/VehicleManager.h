@@ -1,6 +1,6 @@
 #pragma once
 
-class VehicleManager
+class VehicleControllerManager
 {
 public:
 
@@ -31,4 +31,4 @@ private:
     bool canStart() const;
 };
 
-extern VehicleManager VehicleController;
+extern VehicleControllerManager VehicleController;

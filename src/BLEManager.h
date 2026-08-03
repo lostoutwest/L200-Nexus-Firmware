@@ -24,6 +24,11 @@ private:
     NimBLECharacteristic* commandChar = nullptr;
 
     NimBLECharacteristic* statusChar = nullptr;
+    NimBLECharacteristic* diagChar = nullptr;
+    NimBLECharacteristic* otaChar = nullptr;
+    NimBLECharacteristic* configChar = nullptr;
+    NimBLECharacteristic* rgbChar = nullptr;
+    NimBLECharacteristic* sensorChar = nullptr;
 
     bool clientConnected = false;
 };

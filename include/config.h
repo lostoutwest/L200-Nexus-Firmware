@@ -3,24 +3,40 @@
 
 #define SERIAL_BAUD 115200
 
-// Relay Pins
-#define PIN_RELAY_LOCK_A 16
-#define PIN_RELAY_LOCK_B 17
-#define PIN_RELAY_IGNITION 18
-#define PIN_RELAY_STARTER 19
-#define PIN_RELAY_HEADLIGHTS 20
-#define PIN_RELAY_ACCESSORIES 21
-#define PIN_RELAY_HORN 22
+namespace Pins
+{
+    // Relay Pins
+    constexpr uint8_t LockRelay = 16;
+    constexpr uint8_t UnlockRelay = 17;
+    constexpr uint8_t IgnitionRelay = 18;
+    constexpr uint8_t StarterRelay = 19;
+    constexpr uint8_t HeadlightRelay = 20;
+    constexpr uint8_t AccessoryRelay = 21;
+    constexpr uint8_t HornRelay = 22;
 
-// RGB Hardware
-#define PIN_RGB_DATA 5
-#define NUM_LEDS 14
+    // RGB Hardware
+    constexpr uint8_t PIN_RGB_DATA = 5;
+    constexpr uint8_t NUM_LEDS = 14;
+}
 #define RGB_BRIGHTNESS_DEFAULT 75 // ~30% of 255
 
-// BLE UUIDs
-#define SERVICE_UUID      "12345678-1234-1234-1234-123456789001"
-#define COMMAND_UUID      "12345678-1234-1234-1234-123456789002"
-#define STATUS_UUID       "12345678-1234-1234-1234-123456789003"
+//==================================================
+// L200 NEXUS ACP v2 BLE UUIDs
+//==================================================
+
+#define DEVICE_NAME        "L200-NEXUS"
+
+#define SERVICE_UUID       "D7F0A100-3E91-4C25-9D8A-001122334455"
+
+#define COMMAND_UUID       "D7F0A101-3E91-4C25-9D8A-001122334455"
+
+#define STATUS_UUID        "D7F0A102-3E91-4C25-9D8A-001122334455"
+
+#define CONFIG_UUID        "D7F0A103-3E91-4C25-9D8A-001122334455"
+
+#define RGB_UUID           "D7F0A104-3E91-4C25-9D8A-001122334455"
+
+#define OTA_UUID           "D7F0A105-3E91-4C25-9D8A-001122334455"
 
 namespace Timing
 {

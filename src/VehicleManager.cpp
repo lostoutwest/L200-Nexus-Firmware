@@ -1,18 +1,16 @@
 #include "VehicleManager.h"
-
 #include "VehicleState.h"
 #include "RelayManager.h"
+#include "Logger.h"
 
-#include "../Services/Logger.h"
+VehicleControllerManager VehicleController;
 
-VehicleManager VehicleController;
-
-void VehicleManager::begin()
+void VehicleControllerManager::begin()
 {
     Log.info("Vehicle Manager Ready");
 }
 
-void VehicleManager::update()
+void VehicleControllerManager::update()
 {
     // Future timers
     // Safety checks
@@ -20,7 +18,7 @@ void VehicleManager::update()
     // Starter timeout
 }
 
-bool VehicleManager::lock()
+bool VehicleControllerManager::lock()
 {
     if (Vehicle.locked)
     {
@@ -28,7 +26,7 @@ bool VehicleManager::lock()
         return false;
     }
 
-    Relays.lockPulse();
+    Relays.lock();
 
     Vehicle.locked = true;
 
@@ -37,7 +35,7 @@ bool VehicleManager::lock()
     return true;
 }
 
-bool VehicleManager::unlock()
+bool VehicleControllerManager::unlock()
 {
     if (!Vehicle.locked)
     {
@@ -45,7 +43,7 @@ bool VehicleManager::unlock()
         return false;
     }
 
-    Relays.unlockPulse();
+    Relays.unlock();
 
     Vehicle.locked = false;
 
@@ -54,7 +52,7 @@ bool VehicleManager::unlock()
     return true;
 }
 
-bool VehicleManager::ignitionOn()
+bool VehicleControllerManager::ignitionOn()
 {
     if (Vehicle.ignition)
         return false;
@@ -68,7 +66,7 @@ bool VehicleManager::ignitionOn()
     return true;
 }
 
-bool VehicleManager::ignitionOff()
+bool VehicleControllerManager::ignitionOff()
 {
     Relays.ignitionOff();
 
@@ -81,7 +79,7 @@ bool VehicleManager::ignitionOff()
     return true;
 }
 
-bool VehicleManager::canStart() const
+bool VehicleControllerManager::canStart() const
 {
     if (!Vehicle.ignition)
         return false;
@@ -92,7 +90,7 @@ bool VehicleManager::canStart() const
     return true;
 }
 
-bool VehicleManager::startEngine()
+bool VehicleControllerManager::startEngine()
 {
     if (!canStart())
     {
@@ -102,12 +100,18 @@ bool VehicleManager::startEngine()
 
     Relays.starterOn();
 
+    delay(800);
+
+    Relays.starterOff();
+
+    Vehicle.engineRunning = true;
+
     Log.info("Starter Engaged");
 
     return true;
 }
 
-bool VehicleManager::stopStarter()
+bool VehicleControllerManager::stopStarter()
 {
     Relays.starterOff();
 
@@ -116,7 +120,7 @@ bool VehicleManager::stopStarter()
     return true;
 }
 
-bool VehicleManager::headlights(bool state)
+bool VehicleControllerManager::headlights(bool state)
 {
     Relays.headlights(state);
 
@@ -127,7 +131,7 @@ bool VehicleManager::headlights(bool state)
     return true;
 }
 
-bool VehicleManager::accessories(bool state)
+bool VehicleControllerManager::accessories(bool state)
 {
     Relays.accessories(state);
 
@@ -138,7 +142,7 @@ bool VehicleManager::accessories(bool state)
     return true;
 }
 
-bool VehicleManager::horn(bool state)
+bool VehicleControllerManager::horn(bool state)
 {
     Relays.horn(state);
 

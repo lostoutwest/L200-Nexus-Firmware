@@ -49,4 +49,4 @@ private:
     unsigned long heartbeatTimer = 0;
 };
 
-extern RGBManager RGB;
+extern RGBManager Lighting;

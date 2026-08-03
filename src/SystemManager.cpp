@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "SystemManager.h"
+#include "RelayManager.h"
 #include "Logger.h"
 #include "VehicleManager.h"
 #include "RGBManager.h"
@@ -29,14 +30,14 @@ void SystemManager::begin()
     Log.info("Initialising...");
 
     // Core Modules
-    RGB.begin();
-    RGB.setScene(RGBScene::BOOT);
+    Lighting.begin();
+    Lighting.setScene(RGBScene::BOOT);
 
-    VehicleMgr.begin();
+    VehicleController.begin();
 
     // Interface Modules
     BLE.begin();
-    WiFi.begin();
+    WiFiInterface.begin();
 
     // Utility Modules
     Sensors.begin();
@@ -45,7 +46,8 @@ void SystemManager::begin()
     Security.begin();
 
     Log.info("System Ready");
-    RGB.setScene(RGBScene::IDLE);
+    Lighting.setScene(RGBScene::IDLE);
+    initialised = true;
 }
 
 void SystemManager::update()
@@ -53,11 +55,11 @@ void SystemManager::update()
     if (!initialised)
         return;
 
-    VehicleMgr.update();
-    RGB.update();
+    VehicleController.update();
+    Lighting.update();
     Relays.update();
     BLE.update();
-    WiFi.update();
+    WiFiInterface.update();
     Sensors.update();
     Faults.update();
     OTA.update();
