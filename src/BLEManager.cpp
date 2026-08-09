@@ -1,7 +1,7 @@
 #include "../include/BLEManager.h"
 
 #include "../include/VehicleController.h"
-#include "../include/config.h"
+#include "../include/Config.h"
 #include "../include/Logger.h"
 
 BLEManager BLE;

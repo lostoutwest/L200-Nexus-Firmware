@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "../include/config.h"
+#include "../include/Config.h"
 #include "../include/SystemManager.h"
 #include "../include/Logger.h"
 

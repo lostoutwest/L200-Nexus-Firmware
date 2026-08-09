@@ -2,7 +2,7 @@
 #include "../include/VehicleController.h"
 #include "../include/VehicleState.h"
 #include "../include/Logger.h"
-#include "../include/config.h"
+#include "../include/Config.h"
 #include <ArduinoJson.h>
 #include <WebServer.h>
 #include <WiFi.h>

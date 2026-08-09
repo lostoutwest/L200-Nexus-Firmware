@@ -1,5 +1,5 @@
 #include "../include/RelayManager.h"
-#include "../include/config.h"
+#include "../include/Config.h"
 
 RelayManager Relays;
 
