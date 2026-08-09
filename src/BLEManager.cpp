@@ -52,9 +52,7 @@ class CommandCallbacks : public NimBLECharacteristicCallbacks
 
         cmd.toUpperCase();
 
-        Log.print("[BLE] RX : ");
-
-        Log.info(cmd);
+        Log.info("[BLE] RX : " + cmd);
 
         //------------------------------------------------
 
@@ -188,7 +186,5 @@ void BLEManager::notifyStatus()
 
     statusChar->notify();
 
-    Log.print("[BLE] TX : ");
-
-    Log.info(json);
+    Log.info("[BLE] TX : " + json);
 }
