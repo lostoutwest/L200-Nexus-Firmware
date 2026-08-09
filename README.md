@@ -1,39 +1,129 @@
-# L200 Nexus Firmware
+# L200 Nexus ACP Firmware
 
-Automotive Control Platform (ACP)
-Designed for the 1981 Mitsubishi L200 Sport.
+ESP32-based Automotive Control Platform (ACP) for the 1981 Mitsubishi L200 Sport.
 
-**Project Codename:** GENESIS
-**Current Release:** 2.1.0-a3 (Foundation Release)
+The goal of this project is to provide a modern Bluetooth LE vehicle controller with support for remote locking, ignition control, engine starting, lighting, OTA updates and a companion Flutter application.
 
 ---
 
-## 🚀 Project Status
-`Status: 🚧 Active Development / Architecture Frozen`
+## Features
 
-By treating this as a long-term engineering project, we ensure the firmware, hardware, and app evolve naturally and maintain a professional, cohesive standard.
+### Bluetooth Low Energy (BLE)
 
-## 📦 Release Roadmap
-- **2.1.0-a1**: Core Boot & Logging
-- **2.1.0-a2**: Vehicle Core (BCM)
-- **2.1.0-a3**: Foundation Release (All Core Managers)
-- **2.1.0-a4**: BLE Integration
-- **2.1.0-beta**: Flutter App Integration
-- **Version 2.1**: Final Release Candidate
+- Stable BLE advertising
+- Custom GATT service
+- Vehicle command interface
+- Live vehicle status notifications
 
-## 🛠 Hardware Architecture
-The project is designed for an ESP32-S3 based custom PCB featuring:
-- USB-C Programming/Power
-- Dual-Relay Lock Safety Logic
-- WS2812B RGB Animation Engine
-- Sensor Input Array (Voltage, Temp, Pressure)
-- CAN Bus Header
+### Vehicle Control
 
-## 📂 Documentation
-Detailed specifications are located in the `docs/` directory:
-- [Architecture](docs/Architecture.md) - The "Brain, Memory, Muscle" pattern.
-- [Relay Mapping](docs/Relay Mapping.md) - Hardware pin assignments.
-- [RGB Scenes](docs/RGB Scenes.md) - The lighting language.
+- Lock
+- Unlock
+- Ignition On / Off
+- Engine Start
+- Headlights
+
+### RGB Status System
+
+- Boot animation
+- BLE advertising
+- Connected indication
+- Lock / Unlock effects
+- Engine running
+- Fault indication
+
+### Connectivity
+
+- Wi-Fi Access Point
+- HTTP API
+- OTA firmware updates
+
+### Security
+
+- Command validation
+- Expandable authentication framework
 
 ---
-Developed for the 1981 Mitsubishi L200 Sport.
+
+# Hardware
+
+Current development platform
+
+- ESP32 NodeMCU-32S
+- 4-Channel Relay Module
+- 12V Vehicle Electrical System
+
+---
+
+# Repository Structure
+
+```text
+include/
+lib/
+src/
+docs/
+hardware/
+platformio.ini
+```
+
+---
+
+# Companion Application
+
+The Flutter application is maintained separately:
+
+**L200-Nexus-App**
+
+---
+
+# Documentation
+
+- Architecture
+- BLE API
+- Relay Mapping
+- RGB Scenes
+- Wiring
+- Pinout
+
+---
+
+# Development Status
+
+Current Version
+
+**v2.3.0**
+
+Working
+
+- BLE
+- Vehicle Controller
+- Relay Manager
+- Wi-Fi AP
+- OTA Framework
+- RGB Manager
+
+Currently Improving
+
+- Relay hardware integration
+- BLE authentication
+- Vehicle diagnostics
+- Battery monitoring
+
+---
+
+# Roadmap
+
+- Secure BLE pairing
+- OTA improvements
+- Diagnostic Trouble Codes
+- CAN expansion
+- Mobile App enhancements
+- PCB controller design
+
+---
+
+# License
+
+MIT License
+
+---
