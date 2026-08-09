@@ -1,5 +1,7 @@
 #include "../include/Logger.h"
 
+Logger Log;
+
 void Logger::begin()
 {
     Serial.begin(115200);
