@@ -14,6 +14,11 @@
 - Added OTA progress tracking
 - Prepared for future CAN support
 
+## Next Release (TODO)
+- [ ] Secure WiFi AP credential storage: Replace hardcoded WIFI_AP_PASSWORD with ESP32 NVS storage
+- [ ] Implement first-boot secure password generation and BLE configuration interface
+- [ ] Add BLE characteristic for secure credential updates (ties to 'secure BLE pairing' feature)
+
 ## Release 2.1.0-a3 (Foundation Release)
 - Architecture Freeze: L200 NEXUS ACP Version 2.1.
 - Core Modular Framework implemented.
