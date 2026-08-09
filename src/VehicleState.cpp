@@ -1,6 +1,4 @@
-#include "VehicleState.h"
-
-VehicleState Vehicle;
+#include "../include/VehicleState.h"
 
 void VehicleState::reset()
 {

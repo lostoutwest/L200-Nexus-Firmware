@@ -1,23 +1,24 @@
 #include <Arduino.h>
 
-#include "SystemManager.h"
-#include "RelayManager.h"
-#include "Logger.h"
-#include "VehicleManager.h"
-#include "RGBManager.h"
-#include "BLEManager.h"
-#include "WiFiManager.h"
+#include "../include/SystemManager.h"
+#include "../include/RelayManager.h"
+#include "../include/Logger.h"
+#include "../include/VehicleController.h"
+#include "../include/RGBManager.h"
+#include "../include/BLEManager.h"
+#include "../include/WiFiManager.h"
 #include "SensorManager.h"
-#include "FaultManager.h"
-#include "OTAManager.h"
-#include "SecurityManager.h"
+#include "../include/FaultManager.h"
+#include "../include/OTAManager.h"
+#include "../include/SecurityManager.h"
 
-#include "../include/config.h"
-#include "../include/version.h"
+#include "../include/Config.h"
+
+SystemManager System;
 
 void SystemManager::begin()
 {
-    Serial.begin(SERIAL_BAUD);
+    Serial.begin(115200);
 
     delay(50);
 
@@ -33,7 +34,7 @@ void SystemManager::begin()
     Lighting.begin();
     Lighting.setScene(RGBScene::BOOT);
 
-    VehicleController.begin();
+    Vehicle.begin();
 
     // Interface Modules
     BLE.begin();
@@ -55,7 +56,7 @@ void SystemManager::update()
     if (!initialised)
         return;
 
-    VehicleController.update();
+    Vehicle.update();
     Lighting.update();
     Relays.update();
     BLE.update();

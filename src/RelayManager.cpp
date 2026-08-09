@@ -1,132 +1,164 @@
-#include "RelayManager.h"
-
+#include "../include/RelayManager.h"
 #include "../include/config.h"
 
 RelayManager Relays;
 
+//====================================================
+// Initialisation
+//====================================================
+
 void RelayManager::begin()
 {
-    pinMode(Pins::LockRelay, OUTPUT);
-    pinMode(Pins::UnlockRelay, OUTPUT);
-    pinMode(Pins::IgnitionRelay, OUTPUT);
-    pinMode(Pins::StarterRelay, OUTPUT);
-    pinMode(Pins::HeadlightRelay, OUTPUT);
-    pinMode(Pins::AccessoryRelay, OUTPUT);
-    pinMode(Pins::HornRelay, OUTPUT);
+    pinMode(PIN_LOCK_RELAY, OUTPUT);
+    pinMode(PIN_UNLOCK_RELAY, OUTPUT);
+    pinMode(PIN_IGNITION_RELAY, OUTPUT);
+    pinMode(PIN_STARTER_RELAY, OUTPUT);
+    pinMode(PIN_HEADLIGHT_RELAY, OUTPUT);
 
-    allOff();
+    digitalWrite(PIN_LOCK_RELAY, LOW);
+    digitalWrite(PIN_UNLOCK_RELAY, LOW);
+    digitalWrite(PIN_IGNITION_RELAY, LOW);
+    digitalWrite(PIN_STARTER_RELAY, LOW);
+    digitalWrite(PIN_HEADLIGHT_RELAY, LOW);
 }
+
+//====================================================
+// Main Update
+//====================================================
 
 void RelayManager::update()
 {
-    uint32_t now = millis();
+    updatePulse(lockTimer);
+    updatePulse(unlockTimer);
+    updatePulse(starterTimer);
+}
 
-    for (auto &p : pulses)
+//====================================================
+// Pulse Engine
+//====================================================
+
+void RelayManager::startPulse(
+    Pulse& timer,
+    uint8_t pin,
+    uint16_t duration)
+{
+    digitalWrite(pin, HIGH);
+
+    timer.active = true;
+    timer.pin = pin;
+    timer.duration = duration;
+    timer.startTime = millis();
+}
+
+void RelayManager::updatePulse(Pulse& timer)
+{
+    if (!timer.active)
+        return;
+
+    if ((millis() - timer.startTime) >= timer.duration)
     {
-        if (!p.active)
-            continue;
+        digitalWrite(timer.pin, LOW);
 
-        if (now - p.startTime >= p.duration)
-        {
-            digitalWrite(p.pin, p.endState);
-            p.active = false;
-        }
+        timer.active = false;
     }
 }
 
-void RelayManager::write(uint8_t pin, bool state)
-{
-    digitalWrite(pin, state ? LOW : HIGH);
-}
-
-void RelayManager::allOff()
-{
-    write(Pins::LockRelay, LOW);
-    write(Pins::UnlockRelay, LOW);
-    write(Pins::IgnitionRelay, LOW);
-    write(Pins::StarterRelay, LOW);
-    write(Pins::HeadlightRelay, LOW);
-    write(Pins::AccessoryRelay, LOW);
-    write(Pins::HornRelay, LOW);
-
-    for (auto &p : pulses)
-    {
-        p.active = false;
-    }
-}
-
-void RelayManager::pulse(uint8_t pin, bool startState, bool endState, uint16_t duration)
-{
-    // Find first available pulse slot
-    for (auto &p : pulses)
-    {
-        if (!p.active)
-        {
-            digitalWrite(pin, startState);
-            p.pin = pin;
-            p.active = true;
-            p.startTime = millis();
-            p.duration = duration;
-            p.endState = endState;
-            return;
-        }
-    }
-    // If we reach here, all 8 slots are full (extremely unlikely)
-}
+//====================================================
+// Lock
+//====================================================
 
 void RelayManager::lock()
 {
-    pulse(Pins::LockRelay, HIGH, LOW, Timing::LockPulseMs);
-    pulse(Pins::UnlockRelay, HIGH, LOW, Timing::LockPulseMs);
+    // Use non-blocking pulse for lock
+    if (lockTimer.active)
+        return;
+
+    startPulse(
+        lockTimer,
+        PIN_LOCK_RELAY,
+        LOCK_PULSE_TIME
+    );
 }
+
+//====================================================
+// Unlock
+//====================================================
 
 void RelayManager::unlock()
 {
-    pulse(Pins::LockRelay, LOW, LOW, Timing::LockPulseMs);
-    pulse(Pins::UnlockRelay, LOW, LOW, Timing::LockPulseMs);
+    if (unlockTimer.active)
+        return;
+
+    startPulse(
+        unlockTimer,
+        PIN_UNLOCK_RELAY,
+        UNLOCK_PULSE_TIME
+    );
 }
 
-void RelayManager::lockPulse()
-{
-    lock();
-}
-
-void RelayManager::unlockPulse()
-{
-    unlock();
-}
+//====================================================
+// Ignition
+//====================================================
 
 void RelayManager::ignitionOn()
 {
-    write(Pins::IgnitionRelay, HIGH);
+    digitalWrite(
+        PIN_IGNITION_RELAY,
+        HIGH
+    );
 }
 
 void RelayManager::ignitionOff()
 {
-    write(Pins::IgnitionRelay, LOW);
+    digitalWrite(
+        PIN_IGNITION_RELAY,
+        LOW
+    );
 }
 
-void RelayManager::starterOn()
+//====================================================
+// Starter
+//====================================================
+
+void RelayManager::starter()
 {
-    write(Pins::StarterRelay, HIGH);
+    if (starterTimer.active)
+        return;
+
+    startPulse(
+        starterTimer,
+        PIN_STARTER_RELAY,
+        STARTER_TIME
+    );
 }
 
-void RelayManager::starterOff()
-{
-    write(Pins::StarterRelay, LOW);
-}
+//====================================================
+// Headlights
+//====================================================
 
 void RelayManager::headlights(bool state)
 {
-    write(Pins::HeadlightRelay, state);
+    digitalWrite(
+        PIN_HEADLIGHT_RELAY,
+        state
+    );
 }
 
-void RelayManager::accessories(bool state)
+//====================================================
+// Status
+//====================================================
+
+bool RelayManager::lockPulseActive() const
 {
-    write(Pins::AccessoryRelay, state);
+    return lockTimer.active;
 }
 
-void RelayManager::horn(bool state)
+bool RelayManager::unlockPulseActive() const
 {
-    write(Pins::HornRelay, state);
+    return unlockTimer.active;
+}
+
+bool RelayManager::starterActive() const
+{
+    return starterTimer.active;
 }
