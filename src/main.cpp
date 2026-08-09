@@ -20,7 +20,8 @@ void setup()
     Log.info("        L200 NEXUS ACP");
     Log.info("        L200 Nexus ACP V2.3");
     Log.info("==========================================");
-    Log.info("Firmware : " + FW_VERSION);
+    Log.print("Firmware : ");
+    Log.info(FW_VERSION);
     Log.info("");
 
     //--------------------------------------------------

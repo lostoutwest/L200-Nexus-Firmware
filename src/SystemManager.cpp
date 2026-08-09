@@ -7,7 +7,6 @@
 #include "../include/RGBManager.h"
 #include "../include/BLEManager.h"
 #include "../include/WiFiManager.h"
-#include "SensorManager.h"
 #include "../include/FaultManager.h"
 #include "../include/OTAManager.h"
 #include "../include/SecurityManager.h"
