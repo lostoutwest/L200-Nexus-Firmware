@@ -17,6 +17,10 @@ public:
     void error(const String& text);
 
     void debug(const String& text);
+
+    void print(const String& text);
+
+    void println(const String& text);
 };
 
 extern Logger Log;

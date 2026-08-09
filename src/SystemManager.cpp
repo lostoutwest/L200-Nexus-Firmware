@@ -40,7 +40,7 @@ void SystemManager::begin()
     WiFiInterface.begin();
 
     // Utility Modules
-    Sensors.begin();
+    // Sensors.begin();  // TODO: Re-implement sensor management
     Faults.begin();
     OTA.begin();
     Security.begin();
@@ -60,7 +60,7 @@ void SystemManager::update()
     Relays.update();
     BLE.update();
     WiFiInterface.update();
-    Sensors.update();
+    // Sensors.update();  // TODO: Re-implement sensor management
     Faults.update();
     OTA.update();
     Security.update();
