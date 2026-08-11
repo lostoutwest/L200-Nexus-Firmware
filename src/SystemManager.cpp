@@ -35,6 +35,9 @@ void SystemManager::begin()
 
     Vehicle.begin();
 
+    // ADD THIS LINE:
+    Relays.begin();
+
     // Interface Modules
     BLE.begin();
     WiFiInterface.begin();
