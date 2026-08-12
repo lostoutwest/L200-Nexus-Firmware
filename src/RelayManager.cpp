@@ -15,11 +15,11 @@ void RelayManager::begin()
     pinMode(PIN_STARTER_RELAY, OUTPUT);
     pinMode(PIN_HEADLIGHT_RELAY, OUTPUT);
 
-    digitalWrite(PIN_LOCK_RELAY, LOW);
-    digitalWrite(PIN_UNLOCK_RELAY, LOW);
-    digitalWrite(PIN_IGNITION_RELAY, LOW);
-    digitalWrite(PIN_STARTER_RELAY, LOW);
-    digitalWrite(PIN_HEADLIGHT_RELAY, LOW);
+    digitalWrite(PIN_LOCK_RELAY, HIGH);
+    digitalWrite(PIN_UNLOCK_RELAY, HIGH);
+    digitalWrite(PIN_IGNITION_RELAY, HIGH);
+    digitalWrite(PIN_STARTER_RELAY, HIGH);
+    digitalWrite(PIN_HEADLIGHT_RELAY, HIGH);
 }
 
 //====================================================
@@ -42,7 +42,7 @@ void RelayManager::startPulse(
     uint8_t pin,
     uint16_t duration)
 {
-    digitalWrite(pin, HIGH);
+    digitalWrite(pin, LOW);
 
     timer.active = true;
     timer.pin = pin;
@@ -57,7 +57,7 @@ void RelayManager::updatePulse(Pulse& timer)
 
     if ((millis() - timer.startTime) >= timer.duration)
     {
-        digitalWrite(timer.pin, LOW);
+        digitalWrite(timer.pin, HIGH);
 
         timer.active = false;
     }
@@ -104,7 +104,7 @@ void RelayManager::ignitionOn()
 {
     digitalWrite(
         PIN_IGNITION_RELAY,
-        HIGH
+        LOW
     );
 }
 
@@ -112,7 +112,7 @@ void RelayManager::ignitionOff()
 {
     digitalWrite(
         PIN_IGNITION_RELAY,
-        LOW
+        HIGH
     );
 }
 
@@ -140,7 +140,7 @@ void RelayManager::headlights(bool state)
 {
     digitalWrite(
         PIN_HEADLIGHT_RELAY,
-        state
+        !state
     );
 }
 
