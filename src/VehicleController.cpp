@@ -1,16 +1,10 @@
 #include "../include/VehicleController.h"
-#include "VehicleEvent.h"
-
+#include "../include/VehicleEvent.h"
 #include "../include/RelayManager.h"
 #include "../include/RGBManager.h"
-
 #include <ArduinoJson.h>
 
 VehicleController Vehicle;
-
-//=====================================================
-// Startup
-//=====================================================
 
 void VehicleController::begin()
 {
@@ -19,150 +13,73 @@ void VehicleController::begin()
     vehicle.engineRunning = false;
     vehicle.headlights = false;
     vehicle.bleConnected = false;
-
     vehicle.batteryVoltage = 12.6f;
     vehicle.coolantTemperature = 20.0f;
 }
 
-//=====================================================
-
-void VehicleController::update()
-{
-    // Future:
-    // Battery monitor
-    // Engine running detection
-    // Door switches
-    // Ignition sense
-}
-
-//=====================================================
-// LOCK
-//=====================================================
+void VehicleController::update() {}
 
 VehicleEvent VehicleController::lock()
 {
     Relays.lock();
-
     vehicle.locked = true;
-
     return VehicleEvent::LOCKED;
 }
-
-//=====================================================
-// UNLOCK
-//=====================================================
 
 VehicleEvent VehicleController::unlock()
 {
     Relays.unlock();
-
     vehicle.locked = false;
-
+    vehicle.tamperDetected = false;
     return VehicleEvent::UNLOCKED;
 }
 
-//=====================================================
-// IGNITION
-//=====================================================
-
 VehicleEvent VehicleController::ignitionOn()
 {
-    if(vehicle.ignition)
-        return VehicleEvent::NONE;
-
+    if (vehicle.ignition) return VehicleEvent::NONE;
     Relays.ignitionOn();
-
     vehicle.ignition = true;
-
     return VehicleEvent::IGNITION_ON;
 }
 
 VehicleEvent VehicleController::ignitionOff()
 {
-    if(!vehicle.ignition)
-        return VehicleEvent::NONE;
-
+    if (!vehicle.ignition) return VehicleEvent::NONE;
     Relays.ignitionOff();
-
     vehicle.ignition = false;
-    vehicle.engineRunning = false; // Engine stops when ignition is turned off
-
+    vehicle.engineRunning = false;
     return VehicleEvent::IGNITION_OFF;
 }
 
-//=====================================================
-// STARTER
-//=====================================================
-
 VehicleEvent VehicleController::startEngine()
 {
-    if(!vehicle.ignition)
+    if (!vehicle.ignition || vehicle.engineRunning || Relays.starterActive())
         return VehicleEvent::NONE;
-
-    if(vehicle.engineRunning)
-        return VehicleEvent::NONE;
-
-    if(Relays.starterActive())
-        return VehicleEvent::NONE;
-
     Relays.starter();
-
-    vehicle.engineRunning = true; // Assuming success for now
-
+    vehicle.engineRunning = true;
     return VehicleEvent::ENGINE_STARTED;
 }
 
 VehicleEvent VehicleController::stopEngine()
 {
     ignitionOff();
-
     return VehicleEvent::ENGINE_STOPPED;
 }
-
-//=====================================================
-// HEADLIGHTS
-//=====================================================
 
 VehicleEvent VehicleController::headlights(bool state)
 {
     Relays.headlights(state);
-
     vehicle.headlights = state;
-
     return state ? VehicleEvent::HEADLIGHTS_ON : VehicleEvent::HEADLIGHTS_OFF;
 }
 
-//=====================================================
-// BLE
-//=====================================================
-
-void VehicleController::setBLEConnected(bool state)
-{
-    vehicle.bleConnected = state;
-}
-
-bool VehicleController::bleConnected() const
-{
-    return vehicle.bleConnected;
-}
-
-//=====================================================
-// STATE
-//=====================================================
-
-VehicleState& VehicleController::state()
-{
-    return vehicle;
-}
-
-//=====================================================
-// JSON
-//=====================================================
+void VehicleController::setBLEConnected(bool state) { vehicle.bleConnected = state; }
+bool VehicleController::bleConnected() const { return vehicle.bleConnected; }
+VehicleState& VehicleController::state() { return vehicle; }
 
 String VehicleController::json()
 {
     JsonDocument doc;
-
     doc["locked"] = vehicle.locked;
     doc["ignition"] = vehicle.ignition;
     doc["engine"] = vehicle.engineRunning;
@@ -170,10 +87,16 @@ String VehicleController::json()
     doc["battery"] = vehicle.batteryVoltage;
     doc["coolant"] = vehicle.coolantTemperature;
     doc["ble"] = vehicle.bleConnected;
-
+    doc["motionDetected"] = vehicle.motionDetected;
+    doc["accelX"] = vehicle.accelX;
+    doc["accelY"] = vehicle.accelY;
+    doc["accelZ"] = vehicle.accelZ;
+    doc["pitch"] = vehicle.pitch;
+    doc["roll"] = vehicle.roll;
+    doc["tiltDetected"] = vehicle.tiltDetected;
+    doc["tamperDetected"] = vehicle.tamperDetected;
+    doc["sensorMode"] = vehicle.sensorMode == 0 ? "LOCKED" : vehicle.sensorMode == 1 ? "UNLOCKED" : "DRIVING";
     String output;
-
     serializeJson(doc, output);
-
     return output;
 }

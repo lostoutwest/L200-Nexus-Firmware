@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include "../include/SystemManager.h"
 #include "../include/RelayManager.h"
 #include "../include/Logger.h"
@@ -10,40 +9,27 @@
 #include "../include/FaultManager.h"
 #include "../include/OTAManager.h"
 #include "../include/SecurityManager.h"
-
-#include "../include/Config.h"
+#include "../include/SensorManager.h"
 
 SystemManager System;
 
 void SystemManager::begin()
 {
     Serial.begin(115200);
-
     delay(50);
-
     Log.begin();
-
     Log.banner();
-
     Log.info("System Manager Started");
-
     Log.info("Initialising...");
 
-    // Core Modules
     Lighting.begin();
     Lighting.setScene(RGBScene::BOOT);
-
     Vehicle.begin();
-
-    // ADD THIS LINE:
     Relays.begin();
+    Sensors.begin();
 
-    // Interface Modules
     BLE.begin();
     WiFiInterface.begin();
-
-    // Utility Modules
-    // Sensors.begin();  // TODO: Re-implement sensor management
     Faults.begin();
     OTA.begin();
     Security.begin();
@@ -59,11 +45,11 @@ void SystemManager::update()
         return;
 
     Vehicle.update();
+    Sensors.update();
     Lighting.update();
     Relays.update();
     BLE.update();
     WiFiInterface.update();
-    // Sensors.update();  // TODO: Re-implement sensor management
     Faults.update();
     OTA.update();
     Security.update();

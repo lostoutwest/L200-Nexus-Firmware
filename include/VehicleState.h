@@ -12,57 +12,34 @@ struct Diagnostics
 class VehicleState
 {
 public:
-
-    //==================================================
-    // Connection Status
-    //==================================================
-
     bool bleConnected = false;
-
     bool wifiConnected = false;
 
-    //==================================================
-    // Vehicle Status
-    //==================================================
-
     bool locked = true;
-
     bool ignition = false;
-
     bool engineRunning = false;
-
     bool headlights = false;
-
     bool accessories = false;
-
     bool horn = false;
 
-    //==================================================
-    // Live Sensor Values
-    //==================================================
-
     float batteryVoltage = 0.0f;
-
     float coolantTemperature = 0.0f;
-
     float oilPressure = 0.0f;
-
     uint16_t rpm = 0;
-
     float ambientLight = 0.0f;
-
     bool motionDetected = false;
 
-    //==================================================
-    // System Diagnostics
-    //==================================================
+    // MMA8452Q telemetry and anti-tamper state.
+    float accelX = 0.0f;
+    float accelY = 0.0f;
+    float accelZ = 0.0f;
+    float pitch = 0.0f;
+    float roll = 0.0f;
+    bool tiltDetected = false;
+    bool tamperDetected = false;
+    uint8_t sensorMode = 0; // 0=LOCKED, 1=UNLOCKED, 2=DRIVING
 
     Diagnostics diagnostics;
 
-//==================================================
-    // Functions
-    //==================================================
-
     void reset();
 };
-
