@@ -53,6 +53,8 @@ Current development platform
 - 4-Channel Relay Module
 - 12V Vehicle Electrical System
 
+Current hardware configuration: active-low relay outputs on GPIO16/17/18/19/21, RGB data on GPIO22, vehicle inputs on GPIO34/35/32/33, and a Keyestudio MMA8452Q tilt sensor on I²C GPIO25/26 at address `0x1C` or `0x1D`.
+
 ---
 
 # Repository Structure
@@ -84,6 +86,7 @@ The Flutter application is maintained separately:
 - RGB Scenes
 - Wiring
 - Pinout
+- Project summary
 
 ---
 

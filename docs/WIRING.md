@@ -19,4 +19,4 @@ The initial implementation leaves INT1 and INT2 disconnected and reads X/Y/Z ove
 - **UNLOCKED**: telemetry remains active, but movement does not trigger the security alarm.
 - **DRIVING**: selected while ignition or engine state is active; acceleration, pitch, roll, impact/movement telemetry remain available without security alarming.
 
-The RGB data line is GPIO23.
+The RGB data line is GPIO22.
