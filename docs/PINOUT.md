@@ -9,7 +9,7 @@
 | Ignition       | GPIO18 | Active-low ignition relay |
 | Starter        | GPIO19 | Active-low starter relay |
 | Headlights     | GPIO21 | Active-low headlights relay |
-| RGB            | GPIO22 | SM16703P single-wire RGB data |
+| RGB            | GPIO22 | SM16703P single-wire RGB data, 12 pixel groups |
 
 ## Vehicle inputs
 

@@ -82,7 +82,7 @@ Framework : PlatformIO
 //----------------------------------------------------------
 //
 
-#define RGB_LED_COUNT          60
+#define RGB_LED_COUNT          12
 
 #define RGB_DEFAULT_BRIGHTNESS         120
 
