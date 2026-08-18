@@ -19,4 +19,6 @@ The initial implementation leaves INT1 and INT2 disconnected and reads X/Y/Z ove
 - **UNLOCKED**: telemetry remains active, but movement does not trigger the security alarm.
 - **DRIVING**: selected while ignition or engine state is active; acceleration, pitch, roll, impact/movement telemetry remain available without security alarming.
 
-The RGB data line is GPIO22.
+The RGB data line is GPIO22 through a 5V logic-level buffer to the strip DIN input.
+
+The SM16703P strip uses a separate 24V supply. Tie the 24V supply ground, buffer ground, and ESP32 ground together. Never connect the strip’s 24V rail to the ESP32.

@@ -9,7 +9,7 @@
 | Ignition       | GPIO18 | Active-low ignition relay |
 | Starter        | GPIO19 | Active-low starter relay |
 | Headlights     | GPIO21 | Active-low headlights relay |
-| RGB            | GPIO22 | WS2812B RGB data |
+| RGB            | GPIO22 | SM16703P single-wire RGB data |
 
 ## Vehicle inputs
 
@@ -31,3 +31,5 @@
 | I²C address | `0x1C` or `0x1D` | Detected automatically |
 
 Relay outputs are active-low and initialize HIGH (inactive).
+
+The Feit strip is powered separately from the ESP32 at 24V. Connect the ESP32 ground to the strip power ground. Because the SM16703P DIN high-level threshold is based on its approximately 5V internal logic supply, use a 5V-powered 74AHCT125/74AHCT buffer for the GPIO22 data signal; do not feed 24V into GPIO22.

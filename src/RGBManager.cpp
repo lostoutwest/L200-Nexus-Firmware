@@ -6,7 +6,7 @@ RGBManager Lighting;
 
 void RGBManager::begin()
 {
-    FastLED.addLeds<WS2812B, 23, GRB>(leds, RGB_LED_COUNT);
+    FastLED.addLeds<SM16703, PIN_RGB, RGB>(leds, RGB_LED_COUNT);
     FastLED.setBrightness(currentBrightness);
     FastLED.clear();
     FastLED.show();
