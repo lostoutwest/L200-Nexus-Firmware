@@ -4,18 +4,13 @@
 #include <Wire.h>
 #include <math.h>
 
+#include "../include/Config.h"
 #include "../include/Logger.h"
 #include "../include/RGBManager.h"
 #include "../include/VehicleController.h"
 
 namespace
 {
-    constexpr uint8_t SENSOR_SDA = 25;
-    constexpr uint8_t SENSOR_SCL = 26;
-    constexpr float MOTION_DELTA_G = 0.18f;
-    constexpr float MOTION_AXIS_G = 0.35f;
-    constexpr float TILT_DELTA_DEG = 8.0f;
-    constexpr float TILT_ANGLE_DEG = 18.0f;
     constexpr uint8_t MMA8452Q_WHO_AM_I = 0x0D;
     constexpr uint8_t MMA8452Q_OUT_X_MSB = 0x01;
     constexpr uint8_t MMA8452Q_XYZ_DATA_CFG = 0x0E;
@@ -27,10 +22,11 @@ SensorManager Sensors;
 
 void SensorManager::begin()
 {
-    Wire.begin(SENSOR_SDA, SENSOR_SCL);
+    Wire.begin(PIN_TILT_SDA, PIN_TILT_SCL);
     Wire.setClock(400000);
+
     uint8_t id = 0;
-    for (uint8_t address : {uint8_t(0x1C), uint8_t(0x1D)})
+    for (uint8_t address : {uint8_t(MMA8452Q_ADDRESS_LOW), uint8_t(MMA8452Q_ADDRESS_HIGH)})
     {
         sensorAddress = address;
         if (readRegister(MMA8452Q_WHO_AM_I, id) && id == MMA8452Q_EXPECTED_ID)
@@ -39,15 +35,18 @@ void SensorManager::begin()
             break;
         }
     }
+
     if (!sensorAvailable)
     {
         Log.warning("[SENSOR] MMA8452Q not detected at 0x1C or 0x1D");
         return;
     }
+
     writeRegister(MMA8452Q_CTRL_REG1, 0x00);
     writeRegister(MMA8452Q_XYZ_DATA_CFG, 0x00);
     writeRegister(MMA8452Q_CTRL_REG1, 0x11);
     lastUpdate = millis();
+
     Log.info(String("[SENSOR] MMA8452Q ready at 0x") + String(sensorAddress, HEX));
 }
 
@@ -57,6 +56,7 @@ void SensorManager::update()
         return;
 
     selectMode();
+
     const float x = Vehicle.state().accelX;
     const float y = Vehicle.state().accelY;
     const float z = Vehicle.state().accelZ;
@@ -66,16 +66,16 @@ void SensorManager::update()
     Vehicle.state().roll = atan2f(y, sqrtf(x * x + z * z)) * 57.2957795f;
 
     Vehicle.state().motionDetected =
-        fabsf(magnitude - previousMagnitude) >= MOTION_DELTA_G ||
-        fabsf(x) >= MOTION_AXIS_G ||
-        fabsf(y) >= MOTION_AXIS_G ||
-        fabsf(z - 1.0f) >= MOTION_AXIS_G;
+        fabsf(magnitude - previousMagnitude) >= TILT_MOTION_DELTA_G ||
+        fabsf(x) >= TILT_MOTION_AXIS_G ||
+        fabsf(y) >= TILT_MOTION_AXIS_G ||
+        fabsf(z - 1.0f) >= TILT_MOTION_AXIS_G;
 
     Vehicle.state().tiltDetected =
         fabsf(Vehicle.state().pitch - previousPitch) >= TILT_DELTA_DEG ||
         fabsf(Vehicle.state().roll - previousRoll) >= TILT_DELTA_DEG ||
-        fabsf(Vehicle.state().pitch) >= TILT_ANGLE_DEG ||
-        fabsf(Vehicle.state().roll) >= TILT_ANGLE_DEG;
+        fabsf(Vehicle.state().pitch) >= TILT_DANGER_DEG ||
+        fabsf(Vehicle.state().roll) >= TILT_DANGER_DEG;
 
     if (currentMode == SensorMode::LOCKED && (Vehicle.state().motionDetected || Vehicle.state().tiltDetected))
     {
@@ -101,6 +101,7 @@ void SensorManager::selectMode()
         currentMode = SensorMode::LOCKED;
     else
         currentMode = SensorMode::UNLOCKED;
+
     Vehicle.state().sensorMode = static_cast<uint8_t>(currentMode);
 }
 
@@ -113,6 +114,7 @@ bool SensorManager::readRegister(uint8_t reg, uint8_t& value)
     Wire.write(reg);
     if (Wire.endTransmission(false) != 0 || Wire.requestFrom(sensorAddress, uint8_t(1)) != 1)
         return false;
+
     value = Wire.read();
     return true;
 }
@@ -137,6 +139,7 @@ bool SensorManager::readAcceleration(float& x, float& y, float& z)
         int16_t raw = static_cast<int16_t>((Wire.read() << 8) | Wire.read());
         return raw >> 4;
     };
+
     x = readAxis() * 0.0009765625f;
     y = readAxis() * 0.0009765625f;
     z = readAxis() * 0.0009765625f;
