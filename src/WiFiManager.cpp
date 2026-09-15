@@ -1,11 +1,13 @@
 #include "../include/WiFiManager.h"
 #include "../include/VehicleController.h"
 #include "../include/VehicleState.h"
+#include "../include/SensorManager.h"
 #include "../include/Logger.h"
 #include "../include/Config.h"
 #include <ArduinoJson.h>
 #include <WebServer.h>
 #include <WiFi.h>
+#include <math.h>
 
 WiFiManager WiFiInterface;
 
@@ -16,20 +18,36 @@ const IPAddress AP_IP(192, 168, 4, 1);
 const IPAddress AP_GATEWAY(192, 168, 4, 1);
 const IPAddress AP_SUBNET(255, 255, 255, 0);
 
-WebServer server(80);
+WebServer server(HTTP_PORT);
 
 String statusJson() {
     JsonDocument doc;
     VehicleState &state = Vehicle.state();
 
-    doc["locked"]      = state.locked;
-    doc["battery"]     = state.batteryVoltage;
-    doc["water_temp"]  = state.coolantTemperature;
-    doc["temp"]        = state.coolantTemperature;
-    doc["engine"]      = state.engineRunning;
-    doc["ignition"]    = state.ignition;
-    doc["headlights"]  = state.headlights;
-    doc["signal"]      = WiFi.softAPgetStationNum() > 0 ? -45 : 0;
+    const bool tiltValid = Sensors.available();
+    const float absoluteTilt = fmaxf(fabsf(state.pitch), fabsf(state.roll));
+    const char* tiltStatus = "unavailable";
+
+    if (tiltValid) {
+        if (absoluteTilt >= TILT_DANGER_DEG) tiltStatus = "danger";
+        else if (absoluteTilt >= TILT_WARNING_DEG) tiltStatus = "warning";
+        else tiltStatus = "safe";
+    }
+
+    doc["firmware"]     = FW_VERSION;
+    doc["hardware"]     = HW_REVISION;
+    doc["locked"]       = state.locked;
+    doc["battery"]      = state.batteryVoltage;
+    doc["water_temp"]   = state.coolantTemperature;
+    doc["temp"]         = state.coolantTemperature;
+    doc["engine"]       = state.engineRunning;
+    doc["ignition"]     = state.ignition;
+    doc["headlights"]   = state.headlights;
+    doc["signal"]       = WiFi.softAPgetStationNum() > 0 ? -45 : 0;
+    doc["tiltPitch"]    = state.pitch;
+    doc["tiltRoll"]     = state.roll;
+    doc["tiltValid"]    = tiltValid;
+    doc["tiltStatus"]   = tiltStatus;
 
     String output;
     serializeJson(doc, output);
@@ -66,10 +84,10 @@ void sendStatus() {
 }
 
 void sendHome() {
-    String html = "<html><head><title>L200_Nexus_ACP</title></head><body>";
-    html += "<h1>L200_Nexus_ACP</h1>";
+    String html = "<html><head><title>L200 Nexus ACP</title></head><body>";
+    html += "<h1>L200 Nexus ACP</h1>";
     html += "<p>WiFi AP ready: " + String(AP_SSID) + "</p>";
-    html += "<p>BLE Device: <strong>L200_Nexus_ACP</strong></p>";
+    html += "<p>BLE Device: <strong>" + String(DEVICE_NAME) + "</strong></p>";
     html += "<p>BLE Service: <strong>";
     html += SERVICE_UUID;
     html += "</strong></p>";
@@ -107,10 +125,7 @@ void handleApiCommand() {
 void WiFiManager::begin() {
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(AP_IP, AP_GATEWAY, AP_SUBNET);
-    WiFi.softAP(
-        WIFI_AP_NAME,
-        WIFI_AP_PASSWORD
-    );
+    WiFi.softAP(WIFI_AP_NAME, WIFI_AP_PASSWORD);
 
     server.on("/", HTTP_GET, sendHome);
     server.on("/api/status", HTTP_GET, sendStatus);
